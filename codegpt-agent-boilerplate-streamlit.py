@@ -6,6 +6,7 @@ import requests
 import time
 import streamlit as st
 
+#Keys:
 # Read API Key and Agent ID from STREAMLIT environment variables
 # More info: https://docs.streamlit.io/library/advanced-features/secrets-management
 # To set environment variables, create a folder called .streamlit
@@ -13,8 +14,17 @@ import streamlit as st
 # codegpt_api_key=my-api-key
 # codegpt_agent_id=my-agent-id
 
-codegpt_api_key=st.secrets.codegpt_api_key
-codegpt_agent_id=st.secrets.codegpt_agent_id
+#OR:
+
+# Get API Key and Agent ID from URL query parameters
+get_codegpt_api_key = st.experimental_get_query_params().get("codegpt_api_key", None)
+get_codegpt_agent_id = st.experimental_get_query_params().get("codegpt_agent_id", None)
+
+
+# This function gets the CodeGPT API key from the environment variable
+# Or from the URL query parameter. For example -> http://localhost:8501/?codegpt_api_key=&codegpt_agent_id=
+codegpt_api_key=get_codegpt_api_key[0] if get_codegpt_api_key != None else st.secrets.codegpt_api_key
+codegpt_agent_id=get_codegpt_agent_id[0] if get_codegpt_agent_id != None else st.secrets.codegpt_agent_id
 
 # Set request headers
 headers = {
@@ -32,7 +42,7 @@ st.set_page_config(
   menu_items={
       'Get Help': 'https://codegpt.co',
       'Report a bug': "https://codegpt.co",
-      'About': "This is a simple chatbot boilerplate that uses the CodeGPT Agent to respond to user input."
+      'About': "This is a simple chatbot boilerplate with memory that uses the CodeGPT Agent API"
   }
 )
 
