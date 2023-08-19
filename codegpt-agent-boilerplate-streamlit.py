@@ -48,7 +48,7 @@ st.set_page_config(
 
 # Streamlit app
 st.title(":sparkles: CodeGPT Agent")
-st.subheader("This is a simple chatbot boilerplate that uses the CodeGPT Agent to respond to user input.")
+st.subheader("A simple chatbot boilerplate that uses the CodeGPT Agent to respond to user input.")
 st.divider()
 #
 
