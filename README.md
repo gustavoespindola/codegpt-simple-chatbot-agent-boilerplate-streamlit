@@ -56,4 +56,4 @@ Contributions are welcome! If you encounter any issues or have suggestions for i
 
 For more information or assistance, you can visit the [CodeGPT website](https://codegpt.co) or report issues on the GitHub repository.
 
-This chatbot boilerplate is provided as-is and can serve as a foundation for building your own conversational applications.
+This chatbot boilerplate is provided as-is and can serve as a foundation for test or building your own conversational applications.

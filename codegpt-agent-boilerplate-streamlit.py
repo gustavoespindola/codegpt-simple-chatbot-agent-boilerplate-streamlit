@@ -6,6 +6,19 @@ import requests
 import time
 import streamlit as st
 
+# Variables (delete this section and sidebar if you are using environment variables)
+codegpt_selected_agent_id = ''
+if 'agents_list' not in st.session_state:
+  st.session_state['agents_list'] = []
+if 'selected_agent_id' not in st.session_state:
+  st.session_state['selected_agent'] = []
+if 'codegpt_api_key' not in st.session_state:
+  st.session_state['codegpt_api_key'] = st.secrets.codegpt_api_key if st.secrets.codegpt_api_key else ''
+
+# Set the URL for the CodeGPT Agent API
+get_agent_url = f"https://playground.judini.ai/api/v1/agent"
+agent_response_url = f"https://playground.judini.ai/api/v1/agent/"
+
 #Keys:
 # Read API Key and Agent ID from STREAMLIT environment variables
 # More info: https://docs.streamlit.io/library/advanced-features/secrets-management
@@ -17,23 +30,14 @@ import streamlit as st
 #OR:
 
 # Get API Key and Agent ID from URL query parameters
-get_codegpt_api_key = st.experimental_get_query_params().get("codegpt_api_key", None)
-get_codegpt_agent_id = st.experimental_get_query_params().get("codegpt_agent_id", None)
-
+# get_codegpt_api_key=st.experimental_get_query_params().get("codegpt_api_key", None)
+# get_codegpt_agent_id=st.experimental_get_query_params().get("codegpt_agent_id", None)
+# 86d58c5f-d247-479c-bd1e-69f767d2e3f8
 
 # This function gets the CodeGPT API key from the environment variable
 # Or from the URL query parameter. For example -> http://localhost:8501/?codegpt_api_key=&codegpt_agent_id=
-codegpt_api_key=get_codegpt_api_key[0] if get_codegpt_api_key != None else st.secrets.codegpt_api_key
-codegpt_agent_id=get_codegpt_agent_id[0] if get_codegpt_agent_id != None else st.secrets.codegpt_agent_id
-
-# Set request headers
-headers = {
-  "Content-Type": "application/json; charset=utf-8",
-  "Authorization": f"Bearer {codegpt_api_key}"
-}
-
-# Get the agent's URL
-agent_url = f"https://playground.judini.ai/api/v1/agent/{codegpt_agent_id}"
+# codegpt_api_key=get_codegpt_api_key[0] if get_codegpt_api_key != None else st.secrets.codegpt_api_key
+# codegpt_agent_id=get_codegpt_agent_id[0] if get_codegpt_agent_id != None else st.secrets.codegpt_agent_id
 
 # Set page metadata config
 st.set_page_config(
@@ -46,11 +50,23 @@ st.set_page_config(
   }
 )
 
-# Streamlit app
-st.title(":sparkles: CodeGPT Agent")
-st.subheader("A simple chatbot boilerplate that uses the CodeGPT Agent to respond to user input.")
-st.divider()
+
+# Set request headers
+headers = {
+  "Content-Type": "application/json; charset=utf-8",
+  "Authorization": f"Bearer {st.session_state['codegpt_api_key']}"
+}
 #
+
+# The function getAgents() gets the list of agents from the CodeGPT API.
+def getAgents():
+  get_agents = requests.get(get_agent_url, headers=headers)
+
+  if get_agents.status_code != 200:
+    st.session_state['agents_list'] = []
+    print(f"Error getting agents: {get_agents.status_code} - {get_agents.text}")
+  else:
+    st.session_state['agents_list'] = get_agents.json()
 
 # The function send_message() sends a message to the CodeGPT Agent.
 # The function expects a boolean argument memory, which defaults to True. For default, CodeGPT API Agent remember 10 messages in memory.
@@ -67,15 +83,50 @@ def send_message(memory: bool = True) -> None:
       data["messages"].append(message)
   else:
     data = { "messages": [ st.session_state.messages[-1] ] }
-  print (st.session_state.messages[0])
   # Send the messages to the agent.
   try:
-    return requests.post(agent_url, headers=headers, stream=True, json=data)
+    return requests.post(agent_response_url + st.session_state['selected_agent']['id'], headers=headers, stream=True, json=data)
   # If there's an error sending the message, print the error message.
   except Exception as e:
     print(f"Error sending message: {e}")
     return None
+#
 
+
+# Streamlit UI | Sidebar
+
+# creates a input to save the CodeGPT API Key
+if st.session_state['codegpt_api_key'] == '':
+  st.session_state['codegpt_api_key'] = st.sidebar.text_input("CodeGPT API Key", placeholder="Enter your CodeGPT API Key")
+else:
+  st.session_state['codegpt_api_key'] = st.sidebar.text_input("CodeGPT API Key", value=st.session_state['codegpt_api_key'], placeholder="Enter your CodeGPT API Key")
+
+
+if st.sidebar.button("Get Agents"):
+  getAgents()
+
+st.sidebar.divider()
+
+# creates a selectbox to save the agent id
+st.session_state["selected_agent"] = st.sidebar.selectbox(
+  'Select an agent',
+  help='Select an agent from your CodeGPT account',
+  options=st.session_state['agents_list'],
+  format_func=lambda agent: agent['name']
+)
+if st.session_state['agents_list']:
+  st.sidebar.success('This is a success message!', icon="✅")
+#
+
+
+# Main | Chat
+st.title(":sparkles: CodeGPT Agent")
+st.subheader(f"A simple chatbot boilerplate that uses the CodeGPT Agent to respond to user input.")
+
+if st.session_state["selected_agent"]:
+  st.write('Chat with:', st.session_state['selected_agent']["name"])
+
+#
 # Initialize chat history
 if "messages" not in st.session_state:
   st.session_state.messages = []
