@@ -9,6 +9,8 @@ To use this chatbot, follow these steps:
 2. Get your CodeGPT API key and agent ID. You can either set them as environment variables or pass them as query parameters in the URL.
 3. Run the Streamlit app by executing the following command in your terminal: `streamlit run codegpt-agent-boilerplate-streamlit.py`
 
+![Preview](https://github.com/gustavoespindola/codegpt-simple-chatbot-agent-boilerplate-streamlit/blob/75d04012c21bb037ae76b8f37ddde5001fad905e/intro.gif)
+
 ## Streamlit Environment Variables Usage for CodeGPT API Key and Agent ID
 
 ### Option 1: Reading from STREAMLIT Environment Variables
