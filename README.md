@@ -34,6 +34,8 @@ codegpt_agent_id = "your-agent-id"
 
 The chatbot has memory functionality, which means it can store and use conversation history for context. By default, it remembers the last 10 messages, but you can modify this behavior.
 
+![Alt Text](https://raw.githubusercontent.com/gustavoespindola/codegpt-simple-chatbot-agent-boilerplate-streamlit/e1a00f2e3a12ae8b88c2a7328a07de82069433d6/intro.gif)
+
 ## Code Structure
 
 The code is structured as follows:

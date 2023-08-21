@@ -15,9 +15,8 @@ if 'selected_agent_id' not in st.session_state:
 if 'codegpt_api_key' not in st.session_state:
   st.session_state['codegpt_api_key'] = st.secrets.codegpt_api_key if st.secrets.codegpt_api_key else ''
 
-# Set the URL for the CodeGPT Agent API
-get_agent_url = f"https://playground.judini.ai/api/v1/agent"
-agent_response_url = f"https://playground.judini.ai/api/v1/agent/"
+# Set the URL for the CodeGPT Agent API f"https://playground.judini.ai/api/v1/agent"
+agent_api_url = "https://playground.judini.ai/api/v1/agent/"
 
 #Keys:
 # Read API Key and Agent ID from STREAMLIT environment variables
@@ -32,7 +31,6 @@ agent_response_url = f"https://playground.judini.ai/api/v1/agent/"
 # Get API Key and Agent ID from URL query parameters
 # get_codegpt_api_key=st.experimental_get_query_params().get("codegpt_api_key", None)
 # get_codegpt_agent_id=st.experimental_get_query_params().get("codegpt_agent_id", None)
-# 86d58c5f-d247-479c-bd1e-69f767d2e3f8
 
 # This function gets the CodeGPT API key from the environment variable
 # Or from the URL query parameter. For example -> http://localhost:8501/?codegpt_api_key=&codegpt_agent_id=
@@ -60,7 +58,7 @@ headers = {
 
 # The function getAgents() gets the list of agents from the CodeGPT API.
 def getAgents():
-  get_agents = requests.get(get_agent_url, headers=headers)
+  get_agents = requests.get(agent_api_url, headers=headers)
 
   if get_agents.status_code != 200:
     st.session_state['agents_list'] = []
@@ -85,7 +83,7 @@ def send_message(memory: bool = True) -> None:
     data = { "messages": [ st.session_state.messages[-1] ] }
   # Send the messages to the agent.
   try:
-    return requests.post(agent_response_url + st.session_state['selected_agent']['id'], headers=headers, stream=True, json=data)
+    return requests.post(agent_api_url + st.session_state['selected_agent']['id'], headers=headers, stream=True, json=data)
   # If there's an error sending the message, print the error message.
   except Exception as e:
     print(f"Error sending message: {e}")
